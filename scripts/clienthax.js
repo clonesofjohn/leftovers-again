@@ -6,24 +6,23 @@
 // @author       marten
 // @include        http://play.pokemonshowdown.com/*
 // @include      file:///*/Pokemon-Showdown-Client/*
-// @grant        none
-
+// @grant        GM_addStyle
+// @grant        unsafeWindow
+//
 // in Tampermonkey, just require your local file when developing. ex.
 // for linux: require      file:///media/marten/PERPETUAL_GAZE/leftovers-again/scripts/clienthax.js
 // @require      file:///Users/martins/src/leftovers-again/scripts/clienthax.js
 // ==/UserScript==
-console.log('hello from clienthax.js');
+console.log('hello from clienthax.js!');
 
-// apply extra CSS
-// .switchmenu button {
-//   width: 150px;
-// }
 
-// .movemenu button {
-//   width: 306px;
-// }
+GM_addStyle('.switchmenu button { width: 150px; }');
+GM_addStyle('.movemenu button { width: 306px; }');
+GM_addStyle('.lgn red { color: red }');
+GM_addStyle('.lgn green { color: green }');
 
-var ws = new window.WebSocket('ws://localhost:7331');
+
+var ws = new unsafeWindow.WebSocket('ws://localhost:7331');
 var isOpen = false;
 var msgQueue = [];
 
@@ -34,9 +33,11 @@ ws.onopen = function() {
   ws.onmessage = function(msg) {
     console.log('received msg ', msg);
     $('.battle-log .inner').append('<p>' + msg.data + '</p>');
-    if (msg.data.moves) _onMoveData(msg.data.moves);
-    if (msg.data.opponent) _onOpponentData(msg.data.opponent);
-    if (msg.data.switches) _onSwitchData(msg.data.switches);
+
+    var data = JSON.parse(msg.data);
+    if (data.moves) _onMoveData(data.moves);
+    if (data.opponent) _onOpponentData(data.opponent);
+    if (data.switches) _onSwitchData(data.switches);
   };
 
   isOpen = true;
@@ -49,7 +50,7 @@ ws.onopen = function() {
 
 // retrieve the data we want
 var callhome = function() {
-  ws.send('>' + window.room.id + '\n|ask4help');
+  ws.send('>' + unsafeWindow.room.id + '\n|ask4help');
 };
 
 var clear = function() {
@@ -61,12 +62,14 @@ var helpExists = false;
 
 // listen to Showdown's websocket connection
 var listen = function() {
-  if(!window.app.socket) {
+  console.log(unsafeWindow.app);
+  if(!(unsafeWindow.app && unsafeWindow.app.socket)) {
     console.log('waiting...');
     return setTimeout( listen, 1000 );
   }
-  var prevfn = window.app.socket.onmessage;
-  window.app.socket.onmessage = function(msg) {
+  console.log('hijacking app socket');
+  var prevfn = unsafeWindow.app.socket.onmessage;
+  unsafeWindow.app.socket.onmessage = function(msg) {
     prevfn(msg);
 
     if(isOpen) {
@@ -105,11 +108,11 @@ var _onMoveData = function(moves) {
 var _opponentData = function(opponent) {
   if(!opponent) return;
   var arrows = '';
-  if(opponent.hasStrength) arrows += _getIcon('up-arrow');
-  if(opponent.hasWeakness) arrows += _getIcon('down-arrow');
+  if(opponent.hasWeakness) arrows += _getIcon('&uarr;', 'green');
+  if(opponent.hasStrength) arrows += _getIcon('&darr;', 'red');
 
   $('.statbar.lstatbar strong')
-    .after('<small class="lgn">' + arrows + '</small>');
+    .after(arrows);
 };
 
 var _onSwitchData = function(switches) {
@@ -124,8 +127,8 @@ var _onSwitchData = function(switches) {
   }
 };
 
-var _getIcon = function(str) {
-  return '<i class="fa fa-' + str + '" />';
+var _getIcon = function(str, color) {
+  return '<small class="lgn icon ' + color + '">' + str + '</small>';
 }
 
 listen();
