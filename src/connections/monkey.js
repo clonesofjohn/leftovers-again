@@ -1,6 +1,8 @@
-import Connection from './connection';
-import log from './log';
 import WebSocket from 'ws';
+
+import Connection from './connection';
+
+import log from '../log';
 
 const PORT = 7331;
 

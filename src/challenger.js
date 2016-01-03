@@ -1,5 +1,5 @@
 // import listener from './listener';
-import socket from './socket';
+import socket from './connections/socket';
 import config from './config';
 import Team from './lib/team';
 

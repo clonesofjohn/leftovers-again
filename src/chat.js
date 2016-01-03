@@ -1,6 +1,6 @@
-import listener from './listener';
-import socket from './socket';
+import socket from './connections/socket';
 import config from './config';
+import listener from './listener';
 import Team from './lib/team';
 
 class Chat {

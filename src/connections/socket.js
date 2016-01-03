@@ -1,11 +1,13 @@
-import listener from './listener';
 import WebSocket from 'ws';
 import url from 'url';
-import Connection from './connection';
-import config from './config';
-import util from './util';
 import https from 'https';
-import Chat from './chat';
+
+import Connection from './connection';
+
+import Chat from '../chat';
+import config from '../config';
+import listener from '../listener';
+import util from '../util';
 
 let ws;
 const requestUrl = url.parse(config.actionurl);

@@ -3,10 +3,9 @@ require('./listener');
 
 import config from './config';
 
-// @TODO move these to 'connection' and maybe don't load them all
-import socket from './socket';
-import ajax from './ajax';
-import monkey from './monkey';
+import socket from './connections/socket';
+import ajax from './connections/ajax';
+import monkey from './connections/monkey';
 
 // process cmdline args
 const argv = require('minimist')(process.argv.slice(2));
@@ -62,6 +61,9 @@ Leftovers Again: interface for Pokemon Showdown bots
 -monkey:         listen to userscripts instead of connecting to a server
 -loglevel [1-5]: level of severity of logs to show. higher levels are more
                  verbose. default 3.
+--spawned:       When using a regular server connection, will accept all
+                 challenges but will not issue any challenges or report any
+                 results.
 `);
 }
 

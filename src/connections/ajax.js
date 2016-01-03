@@ -1,6 +1,8 @@
 import http from 'http';
+
 import Connection from './connection';
-import log from './log';
+
+import log from '../log';
 
 const PORT = 1337;
 let server;
