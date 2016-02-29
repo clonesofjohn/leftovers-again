@@ -1,5 +1,6 @@
 import typeChart from 'lib/typechart';
 import Damage from 'lib/damage';
+import Research from 'lib/research';
 
 class KO {
   /**
@@ -43,7 +44,7 @@ class KO {
     }
 
     if (!defender.hp || !defender.maxhp) {
-      defender = Damage.assumeStats(defender);
+      Research.researchMon(defender);
     }
 
     if (damage[0] >= defender.hp) {

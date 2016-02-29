@@ -4,6 +4,7 @@
  */
 import AI from 'ai';
 import Damage from 'lib/damage';
+import Research from 'lib/research';
 import KO from 'lib/kochance';
 import Typechart from 'lib/typechart';
 import Formats from 'data/formats';
@@ -24,7 +25,8 @@ class Infodump extends AI {
 
   onRequest(state) {
     Log.info('infodumps state:: ', state);
-    Damage.assumeStats(state.opponent.active);
+    Research.researchMon(state.self.active, true);
+    Research.researchMon(state.opponent.active, false);
     if (state.forceSwitch) {
       // our pokemon died :(
       // choose a random one
@@ -70,8 +72,8 @@ class Infodump extends AI {
 
   getHelp(state) {
     // console.log('infodumps help state:: ', state);
-    Damage.assumeStats(state.opponent.active);
-
+    Research.researchMon(state.self.active);
+    Research.researchMon(state.opponent.active);
     const extra = {};
 
     try {
@@ -97,16 +99,12 @@ class Infodump extends AI {
       state.self.active.moves.forEach( (move) => {
         let est = [-1];
         if (!move.disabled) {
-          try {
-            est = Damage.getDamageResult(
-              state.self.active,
-              state.opponent.active,
-              move,
-              { weather: state.weather }
-            );
-          } catch (e) {
-            Log.error(e);
-          }
+          est = Damage.getDamageResult(
+            state.self.active,
+            state.opponent.active,
+            move,
+            { weather: state.weather }
+          );
         }
         const ko = KO.predictKO(est, state.opponent.active);
         extra.push({
@@ -122,8 +120,8 @@ class Infodump extends AI {
   }
 
   _switches(state) {
-    Log.log('input:');
-    Log.log(JSON.stringify(state));
+    // Log.log('input:');
+    // Log.log(JSON.stringify(state));
     // query for moves
     const formatData = Formats[util.toId(state.opponent.active.species)];
     const possibleMoves = formatData.randomBattleMoves;
@@ -135,6 +133,7 @@ class Infodump extends AI {
     }
     // for each of my pokemons...
     const results = state.self.reserve.map( (mon) => {
+      Research.researchMon(mon);
       // see how the opponent would fare against this mon of mine.
       const yourMoves = possibleMoves.map( move => {
         // check damage from each of the opponent's moves against this mon.

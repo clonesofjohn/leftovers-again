@@ -55,6 +55,19 @@ class PokeUtil {
     : mod < 0 ? Math.floor(stat * 2 / (2 - mod))
       : stat;
   }
+
+  updateBoosts(orig = {}, additional) {
+    Object.keys(additional).forEach( (stat) => {
+      const current = orig[stat] || 0;
+      const next = Math.max(-6, Math.min(6, current + additional[stat]));
+      if (next === 0) {
+        delete orig[stat];
+      } else {
+        orig[stat] = next;
+      }
+    });
+    return orig;
+  }
 }
 
 const util = new PokeUtil();

@@ -113,6 +113,10 @@ export default class Pokemon {
     }
   }
 
+  deactivate() {
+    delete this.active;
+  }
+
 /**
  * @typedef Move
  *

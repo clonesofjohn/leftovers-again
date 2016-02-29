@@ -64,7 +64,7 @@ class Damage {
     mon.type2 = (mon.types.length === 2)
       ? mon.types[1]
       : '';
-    mon.nature = 'serious';
+    mon.nature = mon.nature || 'serious';
 
     mon.level = mon.level || ASSUME_LEVEL;
 
@@ -75,67 +75,12 @@ class Damage {
     mon.item = mon.item || '';
     mon.gender = 'M';
 
-    this.calculateStats(mon);
+    // @TODO make sure we dont fuck anything up by removing this
+    // this.calculateStats(mon);
 
     return mon;
   }
 
-  /**
-   * Calculate the 'stats' object, which takes baseStats, boosts, EVs, and IVs
-   * into account. Default values are provided for boosts, EVs, and IVs if the
-   * object doesn't currently have these set.
-   *
-   * @param  A reference to the mon in question.
-   * @return The pokemon, with updated values for 'boosts', 'evs', 'ivs', and
-   * 'stats'.
-   */
-  calculateStats(mon) {
-    mon.boosts = Object.assign({
-      [AT]: 0,
-      [DF]: 0,
-      [SA]: 0,
-      [SD]: 0,
-      [SP]: 0
-    }, mon.boosts);
-
-    mon.evs = Object.assign({
-      [AT]: 84,
-      [DF]: 84,
-      [SA]: 84,
-      [SD]: 84,
-      [SP]: 84,
-      [HP]: 84
-    }, mon.evs);
-
-    mon.ivs = Object.assign({
-      [AT]: 31,
-      [DF]: 31,
-      [SA]: 31,
-      [SD]: 31,
-      [SP]: 31,
-      [HP]: 31
-    }, mon.ivs);
-
-    // REMINDER: if it exists, 'stats' is already modified based on baseStats,
-    // EVs, IVs, and level, but not boosts!
-    if (!mon.stats) {
-      mon.stats = {};
-    }
-    [AT, SA, DF, SD, SP, HP].forEach( stat => {
-      if (!mon.stats[stat]) {
-        this._assumeStat(mon, stat);
-      }
-    });
-
-    if (!mon.boostedStats) {
-      mon.boostedStats = {};
-    }
-    [AT, SA, DF, SD, SP].forEach( stat => {
-      mon.boostedStats[stat] = getModifiedStat(
-        mon.stats[stat], mon.boosts[stat]);
-    });
-    return mon;
-  }
 
   processMove(move) {
     move.isCrit = false;
@@ -150,134 +95,6 @@ class Damage {
 
     // isAerilate || isPixilate || isRefrigerate
     return move;
-  }
-
-
-  /**
-   * Use the maximum value for a stat. This means we'll use 252 EVs and a
-   * strong nature for that stat.
-   *
-   * @param  {Object} mon  The Pokemon object.
-   * @param  {String/Enum} stat The stat we're assuming.
-   *
-   * @return {Object} The modified Pokemon object with mon.stats.{stat} defined.
-   *
-   * @see _assumeStat
-   */
-  _maximizeStat(mon, stat) {
-    return this._assumeStat(mon, stat, 252, 1.1);
-  }
-
-  /**
-   * Use the minimum value for a stat. This means we'll use 0 EVs and a weak
-   * nature for that stat.
-   *
-   * @param  {Object} mon  The Pokemon object.
-   * @param  {String/Enum} stat The stat we're assuming.
-   *
-   * @return {Object} The modified Pokemon object with mon.stats.{stat} defined.
-   *
-   * @see _assumeStat
-   */
-  _minimizeStat(mon, stat) {
-    return this._assumeStat(mon, stat, 0, 0.9);
-  }
-
-  /**
-   * Updates a certain stat if it isn't already set.
-
-   * @param  {Object} mon The pokemon object. This is modified directly.
-   * Expects the following properties:
-   * level: {Number} The Pokemon's level
-   * baseStats: {Object} The Pokemon's unmodified (pre-EV and IV) stats
-   * stats: {Object} The Pokemon's modified stats.
-   * nature: {String} (optional) The Pokemon's nature; use natureMultiplier if
-   * this is undefined.
-   * @param  {Enum/String} stat The stat to maybe update.
-   * @param  {Number} evs The EV number, ex. 252.
-   * @param  {Number} natureMultiplier The nature multiplier to use if the
-   *                                   mon doesn't have a nature set. Should
-   *                                   be in [0.9, 1, 1.1].
-   */
-  _assumeStat(mon, stat, evs = 85, natureMultiplier = 1) {
-    if (!mon.stats[stat]) {
-      mon.stats[stat] = this._calculateStat(mon, stat, evs, natureMultiplier);
-    }
-    return mon;
-  }
-
-
-  /**
-   * Calculates a certain stat.
-   *
-   * HP = ((Base * 2 + IV + EV/4) * Level / 100) + Level + 10
-   * Stat = (((Base * 2 + IV + EV/4) * Level / 100) + 5) * Naturemod
-   *
-   * @param  {Object} mon The pokemon object. This is modified directly.
-   * Expects the following properties:
-   * level: {Number} The Pokemon's level
-   * baseStats: {Object} The Pokemon's unmodified (pre-EV and IV) stats
-   * stats: {Object} The Pokemon's modified stats.
-   * nature: {String} (optional) The Pokemon's nature; use natureMultiplier if
-   * this is undefined.
-   * @param  {Enum/String} stat The stat to maybe update.
-   * @param  {Number} evs The EV number, ex. 252.
-   * @param  {Number} natureMultiplier The nature multiplier to use if the
-   *                                   mon doesn't have a nature set. Should
-   *                                   be in [0.9, 1, 1.1].
-   */
-  _calculateStat(mon, stat, evs = 0, natureMultiplier = 1) {
-    const evBonus = Math.floor(evs / 4);
-    const addThis = stat === 'hp' ? (mon.level + 10) : 5;
-    const calculated = ((mon.baseStats[stat] * 2 + 31 + evBonus) *
-      (mon.level / 100) + addThis);
-
-    const nature = (mon.nature
-        ? this._getNatureMultiplier(mon.nature, stat)
-        : natureMultiplier);
-
-    return Math.floor(calculated * nature);
-  }
-
-  /**
-   * Get the multiplier for a given nature and stat.
-   *
-   * @param  {String/Enum} nature A nature.
-   * @param  {String/Enum} stat   A stat.
-   * @return {Number} A number in [0.9, 1, 1.1]. 1 is returned for undefined
-   * natures.
-   */
-  _getNatureMultiplier(nature, stat) {
-    if (!nature) return 1;
-    if (!NATURES[nature]) {
-      console.log('invalid nature! ' + nature);
-      return 1;
-    }
-    if (NATURES[nature][0] === stat) return 1.1;
-    if (NATURES[nature][1] === stat) return 0.9;
-    return 1;
-  }
-
-  /**
-   * Helper function to give a pokemon its stats. This is based on logic for
-   * randombattles. Check the client code data/scripts.js::randomSet. There
-   * are lots of exceptions that I didn't include here, read the client code
-   * for more details.
-   *
-   */
-  assumeStats(mon) {
-    if (!mon.stats) mon.stats = {};
-    [AT, SA, DF, SD, SP, HP].forEach( stat => {
-      if (!mon.stats[stat]) {
-        mon.stats[stat] = this._calculateStat(mon, stat, 85, 1);
-      }
-    });
-
-    // assume HP if we can
-    if (mon.hppct && mon.stats.hp) {
-      mon.maxhp = mon.stats.hp;
-      mon.hp = mon.stats.hp * mon.hppct / 100;
-    }
   }
 
   getDamageResult(a, d, move, field = {}, maxOnly = false) {

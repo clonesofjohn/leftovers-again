@@ -22,6 +22,7 @@
 import AI from 'ai';
 import {MOVE, SWITCH} from 'decisions';
 import Damage from 'lib/damage';
+import Research from 'lib/research';
 import Log from 'log';
 
 export default class Facader extends AI {
@@ -112,8 +113,8 @@ Serious Nature
     state.opponent.active.nature = 'serious';
     state.opponent.active.level = 100;
 
-    Damage.assumeStats(state.self.active);
-    Damage.assumeStats(state.opponent.active);
+    Research.researchMon(state.self.active);
+    Research.researchMon(state.opponent.active);
 
     if (!this.hasLogged) {
       const est = Damage.getDamageResult(

@@ -75,6 +75,9 @@ export default class BattleStore {
   handleSwitch(ident, details, condition) {
     const pos = this._identToPos(ident);
     const former = this._findByPos(pos);
+    if (former) {
+      former.deactivate();
+    }
     const mon = this._recordIdent(ident);
 
     mon.useCondition(condition);
