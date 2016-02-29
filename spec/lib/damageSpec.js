@@ -55,7 +55,7 @@ describe('damage calculator', () => {
       const defender = Research.researchMon('geodude');
 
       // hacky
-      raw.boostedStats.atk = raw.boostedStats.atk * 1.5;
+      raw.stats.atk = raw.stats.atk * 1.5;
 
       const boostedDmg = Damage.getDamageResult(boosted, defender, 'bodyslam');
       const rawDmg = Damage.getDamageResult(raw, defender, 'bodyslam');
@@ -74,7 +74,7 @@ describe('damage calculator', () => {
       const defender = Research.researchMon('geodude');
 
       // hacky
-      raw.boostedStats.atk = raw.boostedStats.atk * 2;
+      raw.stats.atk = raw.stats.atk * 2;
 
       const boostedDmg = Damage.getDamageResult(boosted, defender, 'bodyslam');
       const rawDmg = Damage.getDamageResult(raw, defender, 'bodyslam');
@@ -93,7 +93,7 @@ describe('damage calculator', () => {
       const defender = Research.researchMon('geodude');
 
       // hacky
-      raw.boostedStats.def = raw.boostedStats.def * 2;
+      raw.stats.def = raw.stats.def * 2;
 
       const boostedDmg = Damage.getDamageResult(boosted, defender, 'bodyslam');
       const rawDmg = Damage.getDamageResult(raw, defender, 'bodyslam');

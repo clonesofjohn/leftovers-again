@@ -1,4 +1,5 @@
 import typeChart from 'lib/typechart';
+import Stats from 'lib/stats';
 import util from 'pokeutil';
 
 const AT = 'atk';
@@ -78,6 +79,10 @@ class Damage {
     // @TODO make sure we dont fuck anything up by removing this
     // this.calculateStats(mon);
 
+    if (!mon.boosts && mon.stats) {
+      mon.boostedStats = mon.stats;
+    }
+
     return mon;
   }
 
@@ -97,8 +102,20 @@ class Damage {
     return move;
   }
 
-  getDamageResult(a, d, move, field = {}, maxOnly = false) {
-    console.log('field coming in:', field, defaultField.weather);
+  populateStatsOrError(mon, assumeStats) {
+    if (!mon.stats && !assumeStats) {
+      return `${mon.species || mon.id} missing stats property and not allowed to assume stats!`;
+    }
+
+    // if we're missing a stats object and we can assume stats, this function
+    // will assume them for us, with as much info as we have. if we have a
+    // stats object already, this will still create 'boostedStats' which is
+    // what we use in the damage calculating function.
+    Stats.calculateStats(mon);
+  }
+
+
+  getDamageResult(a, d, move, field = {}, maxOnly = false, assumeStats = true) {
     if (typeof a === 'string') {
       a = util.researchPokemonById(a);
     }
@@ -111,6 +128,12 @@ class Damage {
 
     let attacker = Object.assign({}, a);
     let defender = Object.assign({}, d);
+    const missing = this.populateStatsOrError(attacker, assumeStats) ||
+      this.populateStatsOrError(defender, assumeStats);
+    if (missing) {
+      console.error(missing);
+      return null;
+    }
 
     const defaults = Object.assign({}, defaultField);
     field = Object.assign(defaults, field); // eslint-disable-line
