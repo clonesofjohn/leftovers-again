@@ -3,6 +3,7 @@ import Side from 'model/side';
 import util from 'pokeutil';
 import Log from 'log';
 import Weather from 'constants/weather';
+import Research from 'lib/research';
 
 /**
  * Store for tracking the status of the battle.
@@ -442,11 +443,7 @@ export default class BattleStore {
     // @TODO why aren't we clearing out activeData?
     if (this.activeData && output.self.active.length === this.activeData.length) {
       for (let i = 0; i < this.activeData.length; i++) {
-        const movesArr = this.activeData[i].moves;
-        const updated = movesArr.map( (move) => { // eslint-disable-line
-          return Object.assign(move, util.researchMoveById(move.id));
-        });
-        output.self.active[i].moves = updated;
+        output.self.active[i].moves = this.activeData[i].moves;
       }
     }
 
@@ -473,6 +470,7 @@ export default class BattleStore {
       output.opponent.effects = this.sides[this.yourNick].data();
     }
 
+    Research.getExtendedInfo(output);
     return output;
   }
 

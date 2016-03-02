@@ -67,6 +67,7 @@ export default class Pokemon {
    */
   data() {
     // return only what's necessary
+    // @TODO: remove things from here that are only available from research
     const out = {};
     ['dead', 'condition', 'conditions', 'id', 'species', 'moves', 'level',
     'gender', 'hp', 'maxhp', 'hppct', 'active', 'events', 'types', 'baseStats',
@@ -76,14 +77,16 @@ export default class Pokemon {
       if (this[field]) out[field] = this[field];
     });
 
+    // NOTE: removing this because I don't think we want to give the user this
+    // by default. it's not safe.
     // sometimes we want to apply some boosts.
-    if (out.stats) {
-      out.boostedStats = {};
-      const boosts = out.boosts || {};
-      Object.keys(out.stats).forEach( (key) => {
-        out.boostedStats[key] = util.boostMultiplier(out.stats[key], boosts[key]);
-      });
-    }
+    // if (out.stats) {
+    //   out.boostedStats = {};
+    //   const boosts = out.boosts || {};
+    //   Object.keys(out.stats).forEach( (key) => {
+    //     out.boostedStats[key] = util.boostMultiplier(out.stats[key], boosts[key]);
+    //   });
+    // }
 
     return out;
   }
@@ -109,7 +112,7 @@ export default class Pokemon {
 
     // unfortunately, this resets our move list...
     if (obj.moves) {
-      this.moves = Pokemon.updateMoveList(obj.moves);
+      this.moves = obj.moves;
     }
   }
 
@@ -170,32 +173,6 @@ export default class Pokemon {
  * @property {String} type  The type of move, ex. 'Ghost'. Every move has one and only
  *       one type.
  */
-
-  /**
-   * @TODO maybe we want to turn moves into their own thing...
-   *
-   * This takes a list of moves, looks them up in our move database and
-   * returns some helpful fields about those moves.
-   *
-   * A move has the following spec:
-   *
-   * @param  {Array} moves An array of Move objects
-   *
-   * @return {Array} An array of researched moves.
-   */
-  static updateMoveList(moves) {
-    return moves.map( (move) => {
-      // console.log('old:', move);
-      const research = util.researchMoveById(move);
-      const out = {};
-      ['accuracy', 'basePower', 'category', 'id', 'name', 'volatileStatus',
-      'priority', 'flags', 'heal', 'self', 'target', 'type', 'pp', 'maxpp'].forEach( (field) => {
-        if (research[field]) out[field] = research[field];
-      });
-      // console.log('returning ', out);
-      return out;
-    });
-  }
 
   /**
    * Process the 'details' string of a mon. Updates the fields 'species',
@@ -293,9 +270,6 @@ export default class Pokemon {
   useSpecies(spec) {
     const key = util.toId(spec);
     this.species = key;
-
-    // lol also dangerous
-    Object.assign(this, util.researchPokemonById(key));
   }
 
   /**

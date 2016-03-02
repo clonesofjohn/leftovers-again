@@ -46,11 +46,13 @@ describe('damage calculator', () => {
       const raw = Research.researchMon({
         species: 'eevee'
       });
+      Research.getUnsafeStats(raw);
 
       const boosted = Research.researchMon({
         species: 'eevee',
         boosts: {atk: 1}
       });
+      Research.getUnsafeStats(boosted);
 
       const defender = Research.researchMon('geodude');
 
@@ -65,11 +67,13 @@ describe('damage calculator', () => {
       const raw = Research.researchMon({
         species: 'eevee'
       });
+      Research.getUnsafeStats(raw);
 
       const boosted = Research.researchMon({
         species: 'eevee',
         boosts: {atk: 2}
       });
+      Research.getUnsafeStats(boosted);
 
       const defender = Research.researchMon('geodude');
 
@@ -84,11 +88,13 @@ describe('damage calculator', () => {
       const raw = Research.researchMon({
         species: 'eevee'
       });
+      Research.getUnsafeStats(raw);
 
       const boosted = Research.researchMon({
         species: 'eevee',
         boosts: {def: 2}
       });
+      Research.getUnsafeStats(boosted);
 
       const defender = Research.researchMon('geodude');
 

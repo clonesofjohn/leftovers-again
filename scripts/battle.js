@@ -1,3 +1,8 @@
+/**
+ * Usage:
+ * npm run battle randumb stabby
+ * @type {[type]}
+ */
 const spawn = require('child_process').spawn;
 const readline = require('readline');
 import colors from 'colors/safe';
@@ -58,7 +63,7 @@ const loadSelf = (path) => {
   // });
 
   op.stderr.on('data', (data) => {
-    console.err(data);
+    console.error(data);
   });
 
   op.on('close', (code) => {

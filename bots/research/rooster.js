@@ -7,6 +7,7 @@
 
 import AI from 'ai';
 import {MOVE, SWITCH} from 'decisions';
+import Research from 'lib/research';
 
 const moveId = 'roost';
 
@@ -87,10 +88,9 @@ Serious Nature
   }
 
   onRequest(state) {
-    if (state.forceSwitch || !this.canRoost(state)) {
+    if (state.forceSwitch || !this.can(state)) {
       this.ctr = this.ctr + 1;
       // will crash out when ctr >= 7;
-
       return new SWITCH(this.ctr);
     }
     return new MOVE(moveId);

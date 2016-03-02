@@ -93,41 +93,21 @@ describe('Pokemon', () => {
       expect(res.dead).toBe(undefined);
     });
   });
-  describe('stat handling', () => {
-    it('should process boosted stats', () => {
-      spyOn(util, 'researchPokemonById').and.returnValue({
-        stats: {atk: 100},
-        boosts: {atk: 2}
-      });
-      const mon = new Pokemon('Fakechu');
-      const res = mon.data();
-      expect(res.stats.atk).toEqual(100);
-      expect(res.boosts.atk).toEqual(2);
-      expect(res.boostedStats.atk).toEqual(200);
-    });
-  });
-  describe('updateMoveList', () => {
-    const list = ['roost', 'fakeout', 'hiddenpowerice'];
-    const moves = Pokemon.updateMoveList(list);
-    it('should research all my moves', () => {
-      // roost doesn't have power
-      expect(moves[0].basePower).toBe(undefined);
-      expect(moves[1].basePower).toEqual(jasmine.any(Number));
-      expect(moves[2].basePower).toEqual(jasmine.any(Number));
-
-      expect(moves[0].accuracy).toBe(true);
-      expect(moves[1].accuracy).toEqual(jasmine.any(Number));
-      expect(moves[2].accuracy).toEqual(jasmine.any(Number));
-
-      expect(moves[0].category).toEqual(jasmine.any(String));
-      expect(moves[1].category).toEqual(jasmine.any(String));
-      expect(moves[2].category).toEqual(jasmine.any(String));
-
-      expect(moves[0].type).toEqual(jasmine.any(String));
-      expect(moves[1].type).toEqual(jasmine.any(String));
-      expect(moves[2].type).toEqual(jasmine.any(String));
-    });
-  });
+  // removing for now because we're no longer calculating boostedStats automatically.
+  //
+  // describe('stat handling', () => {
+  //   it('should process boosted stats', () => {
+  //     spyOn(util, 'researchPokemonById').and.returnValue({
+  //       stats: {atk: 100},
+  //       boosts: {atk: 2}
+  //     });
+  //     const mon = new Pokemon('Fakechu');
+  //     const res = mon.data();
+  //     expect(res.stats.atk).toEqual(100);
+  //     expect(res.boosts.atk).toEqual(2);
+  //     expect(res.boostedStats.atk).toEqual(200);
+  //   });
+  // });
   describe('useBoost', () => {
     let mon;
     beforeEach( () => {

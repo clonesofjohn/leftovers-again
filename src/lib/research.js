@@ -37,7 +37,26 @@ class Research {
   }
 
   getExtendedInfo(state) {
-    // @TODO
+    if (state.self.active) {
+      state.self.active = this.researchMon(state.self.active);
+      if (state.self.active.moves) {
+        state.self.active.moves.map(move => this.researchMove(move));
+      }
+    }
+
+    if (state.self.reserve) {
+      state.self.reserve.map(mon => {
+        // not sure why I have to do this weird reassignment thing here and
+        // nowhere else
+        mon.moves = mon.moves.map(move => this.researchMove(move));
+        return this.researchMon(mon);
+      });
+    }
+
+    state.opponent.active = this.researchMon(state.opponent.active);
+    state.opponent.reserve.map(mon => this.researchMon(mon));
+
+    return state;
   }
 
   researchMove(move) {
@@ -47,10 +66,11 @@ class Research {
     const research = util.researchMoveById(move.id);
     ['accuracy', 'basePower', 'category', 'name', 'volatileStatus',
     'priority', 'flags', 'heal', 'self', 'type'].forEach( (field) => {
-      if (!out[field] && research[field]) {
-        out[field] = research[field];
+      if (!move[field] && research[field]) {
+        move[field] = research[field];
       }
     });
+    return move;
   }
 
   getUnsafeStats(mon) {
@@ -58,7 +78,7 @@ class Research {
     Stats.checkHP(mon);
   }
 
-  researchMon(mon, isMine = false, dangerouslyCalculateStats = true) {
+  researchMon(mon, isMine = false, dangerouslyCalculateStats = false) {
     if (typeof mon === 'string') {
       mon = {species: mon}; // eslint-disable-line
       console.log(mon);
