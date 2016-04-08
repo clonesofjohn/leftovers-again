@@ -12,8 +12,9 @@ export default class Pokemon {
    * @param {String} details  The details of the Pokemon, ex. 'Talonflame, L83, M'
    * @return {Pokemon} An instance of the class Pokemon.
    */
-  constructor(ident, details) {
-    this.useIdent(ident);
+  constructor(ident = null, details, owner = null) {
+    if (ident) this.useIdent(ident);
+    if (owner) this.owner = owner;
     this.useDetails(details);
     this.prevMoves = [];
     this.seenMoves = [];
@@ -245,16 +246,18 @@ export default class Pokemon {
     this.details = details;
     try {
       const deets = details.split(', ');
-
-      if (!this.species) {
-        // log.warn('weird, learning about species from deets.');
-        this.species = deets[0];
-        this.id = util.toId(deets[0]);
-      }
-      if (deets[1]) {
-        this.level = parseInt(deets[1].substr(1), 10);
-      }
-      this.gender = deets[2] || 'M';
+      deets.forEach((deet) => {
+        // hope species is first!
+        if (!this.species && util.toId(deet)) {
+          // log.warn('weird, learning about species from deets.');
+          this.species = deet;
+          this.id = util.toId(deet);
+        } else if (deet.match(/^L\d+$/)) {
+          this.level = parseInt(deets[1].substr(1), 10);
+        } else if (['M', 'F', 'N'].indexOf(deet)) {
+          this.gender = deet;
+        }
+      });
     } catch (e) {
       log.err(`useDetails: error parsing mon.details: ${details}`);
       log.err(e);

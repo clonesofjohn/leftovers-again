@@ -36,7 +36,7 @@ export default class Facader extends AI {
 
   team() {
     return `
-Cinccino
+CinccinoA (Cinccino)
 Ability: Skill Link
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -46,7 +46,7 @@ Serious Nature
 - Aqua Tail
 - Seed Bomb
 
-Cinccino
+CinccinoB (Cinccino)
 Ability: Skill Link
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -56,7 +56,7 @@ Serious Nature
 - Aqua Tail
 - Seed Bomb
 
-Cinccino
+CinccinoC (Cinccino)
 Ability: Skill Link
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -66,7 +66,7 @@ Serious Nature
 - Aqua Tail
 - Seed Bomb
 
-Cinccino
+CinccinoD (Cinccino)
 Ability: Skill Link
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -76,7 +76,7 @@ Serious Nature
 - Aqua Tail
 - Seed Bomb
 
-Cinccino
+CinccinoE (Cinccino)
 Ability: Skill Link
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -86,7 +86,7 @@ Serious Nature
 - Aqua Tail
 - Seed Bomb
 
-Cinccino
+CinccinoF (Cinccino)
 Ability: Skill Link
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -100,7 +100,7 @@ Serious Nature
 
   decide(state) {
     console.log(state);
-    if (state.forceSwitch || !this.canFacade(state)) {
+    if (state.forceSwitch || state.teamPreview || !this.canFacade(state)) {
       this.ctr = this.ctr + 1;
       // will crash out when ctr >= 7;
 

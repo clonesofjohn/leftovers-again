@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 const HP_BAR_LENGTH = 10;
 const EXTRA_MON_ICON = 'O';
-const DEAD_MON_ICON = 'X';
+const DEAD_MON_ICON = ' ';
 const UNKNOWN_MON_ICON = '?';
 const MY_BACKGROUND = chalk.bgYellow;
 const YOUR_BACKGROUND = chalk.bgCyan;
@@ -19,7 +19,9 @@ class MatchStatus {
       ? state.opponent.active.prevMoves[0]
       : '';
 
-    const stuff = this.padLeft(myLastMove, 12) + ' | ' +
+    const stuff = this.padLeft(state.turn, 2) + '|' +
+
+      this.padLeft(myLastMove, 12) + ' | ' +
 
       this.padLeft(
         this.statusString(state.self.active.statuses) + ' ' +
@@ -49,8 +51,20 @@ class MatchStatus {
       this.padRight(yourLastMove, 12) + '';
     console.log(stuff);
   }
+
+  /**
+   * Show different data if team preview is true.
+   * @param  {Object} state  The state of the match.
+   */
+  reportTeamPreview(state) {
+    // console.log(state);
+    const mine = state.self.reserve.map(mon => mon.species).join(', ');
+    const yours = state.opponent.reserve.map(mon => mon.species).join(', ');
+    console.log(`${this.padLeft(mine, 55)} | ${yours}`);
+  }
+
   hp(hppct) {
-    const blox = Math.floor(hppct / HP_BAR_LENGTH);
+    const blox = Math.ceil(hppct / HP_BAR_LENGTH);
     const antiblox = HP_BAR_LENGTH - blox;
     return chalk.bgGreen(' '.repeat(blox)) + chalk.bgRed(' '.repeat(antiblox));
   }
@@ -83,7 +97,8 @@ class MatchStatus {
     }).length;
 
     const stuff = MY_BACKGROUND( MY_TEXT(
-      this.padLeft(DEAD_MON_ICON.repeat(myDead) + EXTRA_MON_ICON.repeat(myAlive), 6)
+      this.padLeft(DEAD_MON_ICON.repeat(myDead) +
+        EXTRA_MON_ICON.repeat(myAlive), 6)
     ));
     return stuff;
   }
@@ -96,7 +111,8 @@ class MatchStatus {
     }).length;
 
     const stuff = YOUR_BACKGROUND( YOUR_TEXT(
-      this.padRight(EXTRA_MON_ICON.repeat(yourAlive) + DEAD_MON_ICON.repeat(yourDead), 6, UNKNOWN_MON_ICON)
+      this.padRight(EXTRA_MON_ICON.repeat(yourAlive) +
+        UNKNOWN_MON_ICON.repeat(6 - yourDead - yourAlive), 6)
     ));
     return stuff;
   }

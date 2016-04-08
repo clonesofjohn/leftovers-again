@@ -23,7 +23,7 @@ export default class Rooster extends AI {
 
   team() {
     return `
-Talonflame
+TalonFlameA (Talonflame)
 Ability: Gale Wings
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -33,7 +33,7 @@ Serious Nature
 - Brave Bird
 - Roost
 
-Talonflame
+TalonFlameB (Talonflame)
 Ability: Gale Wings
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -43,7 +43,7 @@ Serious Nature
 - Brave Bird
 - Roost
 
-Talonflame
+TalonFlameC (Talonflame)
 Ability: Gale Wings
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -53,7 +53,7 @@ Serious Nature
 - Brave Bird
 - Roost
 
-Talonflame
+TalonFlameD (Talonflame)
 Ability: Gale Wings
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -63,7 +63,7 @@ Serious Nature
 - Brave Bird
 - Roost
 
-Talonflame
+TalonFlameE (Talonflame)
 Ability: Gale Wings
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -73,7 +73,7 @@ Serious Nature
 - Brave Bird
 - Roost
 
-Talonflame
+TalonFlameF (Talonflame)
 Ability: Gale Wings
 Level: 100
 EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe
@@ -86,7 +86,7 @@ Serious Nature
   }
 
   decide(state) {
-    if (state.forceSwitch || state.teamPreview || !this.canRoost(state)) {
+    if (state.forceSwitch || state.teamPreview || !this.can(state)) {
       this.ctr = this.ctr + 1;
       // will crash out when ctr >= 7;
 

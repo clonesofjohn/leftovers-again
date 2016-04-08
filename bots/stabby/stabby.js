@@ -37,8 +37,10 @@ class Stabby {
         );
       } catch (e) {
         console.log(e);
+        console.log(e.stack);
         console.log(state.self.active, state.opponent.active, move);
       }
+
       if (est[0] > maxDamage) {
         maxDamage = est[0];
         bestMove = idx;

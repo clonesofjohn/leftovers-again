@@ -40,6 +40,7 @@ export default class BattleStore {
       heal: this.handleHeal,
       player: this.handlePlayer,
       cant: this.handleCant,
+      poke: this.handlePoke,
       '-fail': this.handleFail,
       '-miss': this.handleMiss,
       '-boost': this.handleBoost,
@@ -104,6 +105,13 @@ export default class BattleStore {
     });
   }
 
+  handlePoke(owner, details) {
+    // probably the first time we're seeing this pokemon
+    if (owner !== this.myId) {
+      this.barn.createPlaceholder(owner, details);
+    }
+  }
+
   /**
    * Handles a move that happened.
    *
@@ -150,7 +158,7 @@ export default class BattleStore {
    * @return {[type]}        [description]
    */
   handleCant(target, reason) {
-    if (['slp', 'par', 'flinch', 'frz', 'Truant'].indexOf(reason) === -1) {
+    if (['slp', 'par', 'flinch', 'frz', 'ability: Truant'].indexOf(reason) === -1) {
       Log.error(`can't! ${target} ${reason}`);
     } else {
       Log.debug(`got 'cant' msg back from server: ${target} ${reason}`);

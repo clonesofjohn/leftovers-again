@@ -89,7 +89,9 @@ class Battle {
    * @TODO is this necessary or should we do this in handleRequest?
    */
   handleTeamPreview() {
-    this.decide();
+    const state = this.store.data();
+    Reporter.reportTeamPreview(state);
+    this.decide(state);
   }
 
   /**
@@ -107,6 +109,8 @@ class Battle {
     // this is not a request, just data.
     // @TODO probably unnecessary
     if (!data.rqid) {
+      const state = this.store.data();
+      Reporter.report(state);
       return false;
     }
 
@@ -121,7 +125,9 @@ class Battle {
     }
 
     if (data.forceSwitch) {
-      this.decide();
+      const state = this.store.data();
+      Reporter.report(state);
+      this.decide(state);
     }
   }
 
@@ -131,7 +137,9 @@ class Battle {
    * @param that I'm ignoring: the turn number.
    */
   handleTurn(turn) { // eslint-disable-line
-    this.decide();
+    const state = this.store.data();
+    Reporter.report(state);
+    this.decide(state);
   }
 
   handleWin(winner) {
@@ -140,46 +148,43 @@ class Battle {
 
     listener.relay('battlereport', {
       winner,
-      opponent: this.store.yourNick});
+      opponent: this.store.yourNick
+    });
   }
 
   /**
    * Asks the AI to make a decision, then sends it to the server.
    *
    */
-  decide() {
-    const currentState = this.store.data();
-
+  decide(state) {
     log.debug('STATE:');
-    log.debug(JSON.stringify(currentState));
+    log.debug(JSON.stringify(state));
 
-    Reporter.report(currentState);
-
-    log.toFile(`lastknownstate-${this.bid}.log`, JSON.stringify(currentState) + '\n');
+    log.toFile(`lastknownstate-${this.bid}.log`, JSON.stringify(state) + '\n');
 
     // attach previous states
-    currentState.prevStates = this.prevStates;
+    state.prevStates = this.prevStates; // eslint-disable-line
 
-    const choice = this.myBot().decide(currentState);
+    const choice = this.myBot().decide(state);
     if (choice instanceof Promise) {
       // wait for promises to resolve
       choice.then( (resolved) => {
-        const res = Battle._formatMessage(this.bid, resolved, currentState);
+        const res = Battle._formatMessage(this.bid, resolved, state);
         log.info(res);
         listener.relay('_send', res);
         // saving this state for future reference
-        this.prevStates.unshift( this.abbreviateState(currentState) );
+        this.prevStates.unshift(this.abbreviateState(state));
       }, (err) => {
         log.err('I think there was an error here.');
         log.err(err);
       });
     } else {
       // message is ready to go
-      const res = Battle._formatMessage(this.bid, choice, currentState);
+      const res = Battle._formatMessage(this.bid, choice, state);
       log.info(res);
       listener.relay('_send', res);
       // saving this state for future reference
-      this.prevStates.unshift( this.abbreviateState(currentState) );
+      this.prevStates.unshift( this.abbreviateState(state) );
     }
   }
 
